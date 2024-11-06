@@ -13,6 +13,7 @@ namespace kore {
             void set_rank(int rank);
             void increase_rank();
             int rank() const noexcept;
+            const Type* element_type() const;
             const Type* unify(const Type* other_type) const override;
             const Type* unify(const ArrayType* array_type) const override;
             void unify_element_type(const Type* type);

@@ -27,6 +27,10 @@ namespace kore {
         return _rank;
     }
 
+    const Type* ArrayType::element_type() const {
+        return _element_type;
+    }
+
     const Type* ArrayType::unify(const Type* other_type) const {
         switch (other_type->category()) {
             case TypeCategory::Array:

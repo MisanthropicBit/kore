@@ -65,7 +65,6 @@
 #ifdef _KORE_DEBUG_VM
     #include "logging/logging.hpp"
 
-    // TODO: Change to use debug_group
     #define KORE_DEBUG_VM_LOG(action, value) {\
         if (!value.empty()) {\
             debug_group("vm", "%s: %s", action, value.c_str());\
@@ -212,7 +211,13 @@ namespace kore {
                         Reg reg = GET_REG1(instruction);
                         int size = GET_VALUE(instruction);
 
-                        _registers[fp + reg] = Value::allocate_array(size);
+                        _registers[fp + reg] = _heap.allocate_array(size);
+                        break;
+                    }
+
+                    case Bytecode::ArrayFree: {
+                        auto array = _registers[fp + GET_REG1(instruction)].as_array();
+                        _heap.deallocate_array(array, false);
                         break;
                     }
 

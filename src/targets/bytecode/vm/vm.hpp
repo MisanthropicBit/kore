@@ -2,6 +2,7 @@
 #define KORE_VM_HPP
 
 #include "targets/bytecode/codegen/bytecode.hpp"
+#include "targets/bytecode/vm/heap.hpp"
 #include "targets/bytecode/vm/value_type.hpp"
 #include "targets/bytecode/vm/config.hpp"
 #include "targets/bytecode/register.hpp"
@@ -107,6 +108,9 @@ namespace kore {
 
                 // Table of global values
                 std::vector<Value> _globals;
+
+                // The virtual machine's heap
+                Heap _heap;
 
             private:
                 /// Load all functions from a module

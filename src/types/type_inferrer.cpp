@@ -3,6 +3,7 @@
 #include "ast/expressions/binary_expression.hpp"
 #include "bin/korec/options.hpp"
 #include "logging/logging.hpp"
+#include "types/array_type.hpp"
 #include "types/function_type.hpp"
 #include "types/unknown_type.hpp"
 #include "utils/unused_parameter.hpp"
@@ -39,19 +40,34 @@ namespace kore {
             return;
         }
 
-        const Type* inferred_type = array[0]->type();
+        const Type* inferred_element_type = array[0]->type();
 
-        // We infer the type of an array expression (like [1, 2, 3]) by
+        // We infer the element type of an array expression (like [1, 2, 3]) by
         // unifying all element types
         for (int idx = 1; idx < array.size(); ++idx) {
             auto element_index_type = array[idx]->type();
 
-            inferred_type = element_index_type->unify(array[idx]->type());
+            inferred_element_type = element_index_type->unify(array[idx]->type());
         }
+
+        array.set_type(Type::make_array_type(inferred_element_type));
     }
 
-    void TypeInferrer::visit(IndexExpression& array_index) {
-        UNUSED_PARAM(array_index);
+    void TypeInferrer::visit(IndexExpression& index_expr) {
+        index_expr.index_expr()->accept(*this);
+
+        switch (index_expr.type()->category()) {
+            case TypeCategory::Array: {
+                index_expr.set_type(
+                    static_cast<const ArrayType*>(index_expr.type())->element_type()
+                );
+                break;
+            }
+
+            default: {
+                // TODO:
+            }
+        }
     }
 
     void TypeInferrer::visit(IndexExpression& array_index, ValueContext context) {
